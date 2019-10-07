@@ -17,6 +17,7 @@ movies <- str_split_fixed(readLines(unzip("data/ml-10m.zip", "ml-10M100K/movies.
 colnames(movies) <- c("movieId", "title", "genres")
 movies <- as.data.frame(movies) %>% mutate(movieId = as.numeric(levels(movieId))[movieId], title = as.character(title), genres = as.character(genres))
 movielens <- left_join(ratings, movies, by = "movieId")
+movie_titles <- movielens %>% select(movieId, title) %>% distinct()
 # Validation set will be 10% of MovieLens data
 set.seed(1, sample.kind="Rounding")
 # if using R 3.5 or earlier, use `set.seed(1)` instead
@@ -29,5 +30,6 @@ validation <- temp %>% semi_join(edx, by = "movieId") %>% semi_join(edx, by = "u
 removed <- anti_join(temp, validation)
 edx <- rbind(edx, removed)
 rm(ratings, movies, test_index, temp, movielens, removed)
+save(movie_titles, file = "rda/movie_titles.rda")
 save(edx, file = "rda/edx.rda")
 save(validation, file = "rda/validation.rda")
